@@ -1,32 +1,53 @@
 import sympy as sp
-from sympy import S, QQ
+from sympy import S, symbols, sympify, solveset, factor
 
 def factor_polynomial(polynomial_str):
-    # Define the variable
-    x = sp.symbols('x')
+    try:
+        # Define the variable
+        x = symbols('x')
+        
+        # Parse the polynomial from the string input
+        polynomial = sympify(polynomial_str)
+        
+        # Check if input is a valid polynomial in x
+        if not polynomial.has(x):
+            print("Error: Input must be a polynomial in 'x'.")
+            return
+        
+        # Find the roots over the real numbers
+        roots = solveset(polynomial, x, domain=S.Reals)
+        
+        # Display roots (formatted)
+        print("\nRoots of the polynomial:")
+        if roots:
+            for i, root in enumerate(roots, 1):
+                print(f"Root {i}: {root.evalf(3)}")  # Display roots with 3 decimal places
+        else:
+            print("No real roots found.")
+        
+        # Factorize the polynomial
+        factorization = factor(polynomial)
+        
+        print("\nFactorization:")
+        print(factorization)
     
-    # Parse the polynomial from the string input
-    polynomial = sp.sympify(polynomial_str)
-    
-    # Find the roots of the polynomial using sympy's solveset function over the rational numbers (QQ)
-    roots = sp.solveset(polynomial, x, domain=sp.S.Reals)
-    
-    # Output the roots
-    print("The roots of the polynomial are:")
-    for root in roots:
-        print(root)
-    
-    # Factorize the polynomial
-    factorization = sp.factor(polynomial)
-    
-    print("\nThe factorization of the polynomial is:")
-    print(factorization)
+    except (sp.SympifyError, ValueError) as e:
+        print(f"Error: Invalid input. {e}")
+    except Exception as e:
+        print(f"An unexpected error occurred: {e}")
+
 def main():
-    # user input
-    print("Enter the polynomial (e.g., 'x**3 - 2'):")
-    polynomial_str = input()
+    print("Polynomial Factorization Tool")
+    print("----------------------------")
+    print("Enter a polynomial in terms of 'x' (e.g., 'x**3 - 2*x + 1'):")
     
-    factor_polynomial(polynomial_str)
+    while True:
+        polynomial_str = input("> ").strip()
+        if polynomial_str.lower() in ('exit', 'quit'):
+            break
+        
+        factor_polynomial(polynomial_str)
+        print("\nEnter another polynomial or type 'exit' to quit.")
 
 if __name__ == "__main__":
     main()
